@@ -700,7 +700,6 @@ function serializeElementNode(
       image.currentSrc || image.getAttribute('src') || '<unknown-src>';
     const priorCrossOrigin = image.crossOrigin;
     const recordInlineImage = () => {
-      image.removeEventListener('load', recordInlineImage);
       try {
         canvasService!.width = image.naturalWidth;
         canvasService!.height = image.naturalHeight;
@@ -714,6 +713,7 @@ function serializeElementNode(
           `Cannot inline img src=${imageSrc}! Error: ${err as string}`,
         );
       } finally {
+        // Restore crossOrigin if it was changed
         if (image.crossOrigin === 'anonymous') {
           priorCrossOrigin
             ? (attributes.crossOrigin = priorCrossOrigin)
@@ -725,21 +725,23 @@ function serializeElementNode(
       if (image.complete && image.naturalWidth !== 0) {
         recordInlineImage();
       } else {
-        // Wait for the image to fully load
-        image.addEventListener('load', recordInlineImage);
+        image.addEventListener('load', recordInlineImage, { once: true });
       }
     };
-    const handleImageError = () => {
+    const testImage = new Image();
+    testImage.crossOrigin = 'anonymous';
+    testImage.src = imageSrc;
+    testImage.onload = handleImageLoad;
+    testImage.onerror = () => {
       image.crossOrigin = 'anonymous';
       handleImageLoad();
     };
-    const testImage = new Image();
-    testImage.src = imageSrc;
-    testImage.onload = handleImageLoad;
-    testImage.onerror = handleImageError;
-    // The image content may not have finished loading yet.
-    if (image.complete && image.naturalWidth !== 0) testImage.onload!(new Event('load'));
-    else image.addEventListener('load', recordInlineImage);
+    // Handle already loaded images
+    if (image.complete && image.naturalWidth !== 0) {
+      handleImageLoad();
+    } else {
+      image.addEventListener('load', handleImageLoad, { once: true });
+    }
   }
   // media elements
   if (tagName === 'audio' || tagName === 'video') {
