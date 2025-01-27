@@ -277,12 +277,14 @@ iframe.contentDocument.querySelector('center').clientHeight
     );
 
     await page.waitForSelector('img', { timeout: 1000 });
-    await page.evaluate(`${code}var snapshot = rrwebSnapshot.snapshot(document, {
+    const snapshot = await page.evaluate(`${code}var snapshot = rrwebSnapshot.snapshot(document, {
         dataURLOptions: { type: "image/webp", quality: 0.8 },
         inlineImages: true,
         inlineStylesheet: false
     })`);
+    console.log(snapshot);
     await waitForRAF(page); // need a small wait, as after the crossOrigin="anonymous" change, the snapshot triggers a reload of the image (after which, the snapshot is mutated)
+    console.log(snapshot);
     const bodyChildren = (await page.evaluate(`
       snapshot.childNodes[0].childNodes[1].childNodes.filter((cn) => cn.type === 2);
 `)) as any[];
