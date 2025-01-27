@@ -277,7 +277,8 @@ iframe.contentDocument.querySelector('center').clientHeight
     );
 
     await page.waitForSelector('img', { timeout: 1000 });
-    const snapshot = await page.evaluate(`${code}var snapshot = rrwebSnapshot.snapshot(document, {
+    const snapshot =
+      await page.evaluate(`${code}var snapshot = rrwebSnapshot.snapshot(document, {
         dataURLOptions: { type: "image/webp", quality: 0.8 },
         inlineImages: true,
         inlineStylesheet: false
