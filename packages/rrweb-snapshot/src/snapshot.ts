@@ -710,26 +710,32 @@ function serializeElementNode(
           dataURLOptions.quality,
         );
       } catch (err) {
-        if (image.crossOrigin !== 'anonymous') {
-          image.crossOrigin = 'anonymous';
-          if (image.complete && image.naturalWidth !== 0)
-            recordInlineImage(); // too early due to image reload
-          else image.addEventListener('load', recordInlineImage);
-          return;
-        } else {
-          console.warn(
-            `Cannot inline img src=${imageSrc}! Error: ${err as string}`,
-          );
+        console.warn(
+          `Cannot inline img src=${imageSrc}! Error: ${err as string}`,
+        );
+      } finally {
+        if (image.crossOrigin === 'anonymous') {
+          priorCrossOrigin
+            ? (attributes.crossOrigin = priorCrossOrigin)
+            : image.removeAttribute('crossorigin');
         }
       }
-      if (image.crossOrigin === 'anonymous') {
-        priorCrossOrigin
-          ? (attributes.crossOrigin = priorCrossOrigin)
-          : image.removeAttribute('crossorigin');
-      }
+    };
+    const testImage = new Image();
+    testImage.src = imageSrc;
+    testImage.onload = () => {
+      // If the image loads successfully without crossOrigin
+      recordInlineImage();
+    };
+    testImage.onerror = () => {
+      // If the image fails to load, retry with crossOrigin = "anonymous"
+      image.crossOrigin = 'anonymous';
+      if (image.complete && image.naturalWidth !== 0)
+        recordInlineImage(); // too early due to image reload
+      else image.addEventListener('load', recordInlineImage);
     };
     // The image content may not have finished loading yet.
-    if (image.complete && image.naturalWidth !== 0) recordInlineImage();
+    if (image.complete && image.naturalWidth !== 0) testImage.onload(new Event('load'));
     else image.addEventListener('load', recordInlineImage);
   }
   // media elements
