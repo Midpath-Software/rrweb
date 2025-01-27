@@ -729,7 +729,6 @@ function serializeElementNode(
       }
     };
     const testImage = new Image();
-    testImage.crossOrigin = 'anonymous';
     testImage.src = imageSrc;
     testImage.onload = handleImageLoad;
     testImage.onerror = () => {
