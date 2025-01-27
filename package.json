@@ -1,6 +1,10 @@
 {
   "name": "@rrweb/_monorepo",
   "description": "record and replay the web",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
+  },
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/Midpath-Software/rrweb.git"
