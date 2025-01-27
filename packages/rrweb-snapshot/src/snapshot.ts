@@ -721,21 +721,24 @@ function serializeElementNode(
         }
       }
     };
+    const handleImageLoad = () => {
+      if (image.complete && image.naturalWidth !== 0) {
+        recordInlineImage();
+      } else {
+        // Wait for the image to fully load
+        image.addEventListener('load', recordInlineImage);
+      }
+    };
+    const handleImageError = () => {
+      image.crossOrigin = 'anonymous';
+      handleImageLoad();
+    };
     const testImage = new Image();
     testImage.src = imageSrc;
-    testImage.onload = () => {
-      // If the image loads successfully without crossOrigin
-      recordInlineImage();
-    };
-    testImage.onerror = () => {
-      // If the image fails to load, retry with crossOrigin = "anonymous"
-      image.crossOrigin = 'anonymous';
-      if (image.complete && image.naturalWidth !== 0)
-        recordInlineImage(); // too early due to image reload
-      else image.addEventListener('load', recordInlineImage);
-    };
+    testImage.onload = handleImageLoad;
+    testImage.onerror = handleImageError;
     // The image content may not have finished loading yet.
-    if (image.complete && image.naturalWidth !== 0) testImage.onload(new Event('load'));
+    if (image.complete && image.naturalWidth !== 0) testImage.onload!(new Event('load'));
     else image.addEventListener('load', recordInlineImage);
   }
   // media elements
