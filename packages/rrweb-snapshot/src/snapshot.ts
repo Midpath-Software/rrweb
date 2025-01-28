@@ -727,11 +727,8 @@ function serializeElementNode(
           priorCrossOrigin
             ? (attributes.crossOrigin = priorCrossOrigin)
             : image.removeAttribute('crossorigin');
+          image.addEventListener('load', recordInlineImage, { once: true });
           image.src = imageSrc; // Force reload with new crossOrigin
-          attributes.rr_dataURL = canvasService!.toDataURL(
-            dataURLOptions.type,
-            dataURLOptions.quality,
-          );
         }
       }
     };
