@@ -728,15 +728,29 @@ function serializeElementNode(
           priorCrossOrigin
             ? (attributes.crossOrigin = priorCrossOrigin)
             : image.removeAttribute('crossorigin');
-          image.src = imageSrc; // Force reload with new crossOrigin
         }
       }
     };
+    const handleImageLoad = () => {
+      if (image.complete && image.naturalWidth !== 0) {
+        recordInlineImage();
+      } else {
+        image.addEventListener('load', recordInlineImage, { once: true });
+      }
+    };
+    const testImage = new Image();
+    testImage.crossOrigin = 'anonymous';
+    testImage.src = imageSrc;
+    testImage.onload = handleImageLoad;
+    testImage.onerror = () => {
+      image.crossOrigin = 'anonymous';
+      handleImageLoad();
+    };
     // Handle already loaded images
     if (image.complete && image.naturalWidth !== 0) {
-      recordInlineImage();
+      handleImageLoad();
     } else {
-      image.addEventListener('load', recordInlineImage, { once: true });
+      image.addEventListener('load', handleImageLoad, { once: true });
     }
   }
   // media elements
