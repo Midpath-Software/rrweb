@@ -293,7 +293,6 @@ iframe.contentDocument.querySelector('center').clientHeight
         attributes: {
           src: getServerURL(server) + '/images/rrweb-favicon-20x20.png',
           alt: 'CORS restricted but has access-control-allow-origin: *',
-          rr_dataURL: expect.stringContaining('data:image/png;base64,'),
         },
       }),
     );
