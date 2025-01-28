@@ -710,12 +710,16 @@ function serializeElementNode(
         );
       } catch (err) {
         if (image.crossOrigin !== 'anonymous') {
-          console.warn(`Retrying with crossOrigin='anonymous' for img src=${imageSrc}`);
+          console.warn(
+            `Retrying with crossOrigin='anonymous' for img src=${imageSrc}`,
+          );
           image.crossOrigin = 'anonymous';
           image.addEventListener('load', recordInlineImage, { once: true });
           image.src = imageSrc; // Force reload with new crossOrigin
         } else {
-          console.warn(`Cannot inline img src=${imageSrc}! Error: ${err as string}`);
+          console.warn(
+            `Cannot inline img src=${imageSrc}! Error: ${err as string}`,
+          );
         }
       } finally {
         if (image.crossOrigin === 'anonymous') {
