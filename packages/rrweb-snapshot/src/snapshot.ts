@@ -727,10 +727,26 @@ function serializeElementNode(
         if (image.crossOrigin === 'anonymous') {
           try {
             if (!attributes.rr_dataURL) {
-              attributes.rr_dataURL = canvasService!.toDataURL(
-                dataURLOptions.type,
-                dataURLOptions.quality,
-              );
+              const fetchImageAsBlob = async (url) => {
+                const response = await fetch(url);
+                if (!response.ok) {
+                  throw new Error(`Failed to fetch image at ${url}: ${response.statusText}`);
+                }
+                return response.blob();
+              };
+              const blobToDataURL = (blob) => {
+                return new Promise((resolve, reject) => {
+                  const reader = new FileReader();
+                  reader.onloadend = () => resolve(reader.result);
+                  reader.onerror = reject;
+                  reader.readAsDataURL(blob);
+                });
+              };
+              const generateDataURL = async () => {
+                const blob = await fetchImageAsBlob(imageSrc);
+                return await blobToDataURL(blob);
+              };
+              attributes.rr_dataURL = await generateDataURL();
             }
           } catch (err) {
             console.warn(`Failed to generate rr_dataURL for ${imageSrc}:`, err);
