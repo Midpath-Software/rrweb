@@ -737,19 +737,22 @@ function serializeElementNode(
                 fetch(img.src)
                   .then((response) => {
                     if (!response.ok) {
-                      reject(new Error(`Failed to fetch image: ${response.status}`));
+                      reject(
+                        new Error(`Failed to fetch image: ${response.status}`),
+                      );
                     }
                     return response.blob();
                   })
                   .then((blob) => {
                     const reader = new FileReader();
                     reader.onloadend = () => resolve(reader.result as string);
-                    reader.onerror = () => reject(new Error('Failed to read image as data URL'));
+                    reader.onerror = () =>
+                      reject(new Error('Failed to read image as data URL'));
                     reader.readAsDataURL(blob);
                   })
                   .catch((err) => {
-                      console.warn('Network error while fetching image:', err); 
-                      reject(new Error('Network error while fetching image')); 
+                    console.warn('Network error while fetching image:', err);
+                    reject(new Error('Network error while fetching image'));
                   });
               });
             };
