@@ -734,23 +734,20 @@ function serializeElementNode(
                 img: HTMLImageElement,
               ): Promise<string | null> => {
                 return new Promise((resolve, reject) => {
-                  const xhr = new XMLHttpRequest();
-                  xhr.open('GET', img.src, true);
-                  xhr.responseType = 'blob';
-                  xhr.onload = () => {
-                    if (xhr.status === 200) {
+                  fetch(img.src)
+                    .then((response) => {
+                      if (!response.ok) {
+                        reject(new Error(`Failed to fetch image: ${response.status}`));
+                      }
+                      return response.blob();
+                    })
+                    .then((blob) => {
                       const reader = new FileReader();
                       reader.onloadend = () => resolve(reader.result as string);
-                      reader.onerror = () =>
-                        reject(new Error('Failed to read image as data URL'));
-                      reader.readAsDataURL(xhr.response as Blob);
-                    } else {
-                      reject(new Error(`Failed to fetch image: ${xhr.status}`));
-                    }
-                  };
-                  xhr.onerror = () =>
-                    reject(new Error('Network error while fetching image'));
-                  xhr.send();
+                      reader.onerror = () => reject(new Error('Failed to read image as data URL'));
+                      reader.readAsDataURL(blob);
+                    })
+                    .catch((err) => reject(new Error('Network error while fetching image')));
                 });
               };
               convertImageToDataURL(image)
