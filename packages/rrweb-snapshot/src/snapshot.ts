@@ -725,36 +725,36 @@ function serializeElementNode(
         }
       } finally {
         if (image.crossOrigin === 'anonymous') {
+          priorCrossOrigin
+            ? (attributes.crossOrigin = priorCrossOrigin)
+            : image.removeAttribute('crossorigin');
           try {
             if (!attributes.rr_dataURL) {
-              const fetchImageAsBlob = async (url) => {
-                const response = await fetch(url);
-                if (!response.ok) {
-                  throw new Error(`Failed to fetch image at ${url}: ${response.statusText}`);
-                }
-                return response.blob();
-              };
-              const blobToDataURL = (blob) => {
+              const convertImageToDataURL = (img: HTMLImageElement): Promise<string | null> => {
                 return new Promise((resolve, reject) => {
-                  const reader = new FileReader();
-                  reader.onloadend = () => resolve(reader.result);
-                  reader.onerror = reject;
-                  reader.readAsDataURL(blob);
+                  const xhr = new XMLHttpRequest();
+                  xhr.open('GET', img.src, true);
+                  xhr.responseType = 'blob';
+                  xhr.onload = () => {
+                    if (xhr.status === 200) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => resolve(reader.result as string);
+                      reader.onerror = () => reject(new Error('Failed to read image as data URL'));
+                      reader.readAsDataURL(xhr.response);
+                    } else {
+                      reject(new Error(`Failed to fetch image: ${xhr.status}`));
+                    }
+                  };
+                  xhr.onerror = () => reject(new Error('Network error while fetching image'));
+                  xhr.send();
                 });
               };
-              const generateDataURL = async () => {
-                const blob = await fetchImageAsBlob(imageSrc);
-                return await blobToDataURL(blob);
-              };
-              attributes.rr_dataURL = await generateDataURL();
+              attributes.rr_dataURL = await convertImageToDataURL(image);
             }
           } catch (err) {
             console.warn(`Failed to generate rr_dataURL for ${imageSrc}:`, err);
             attributes.rr_dataURL = null; // Ensure it doesn't remain undefined
           }
-          priorCrossOrigin
-            ? (attributes.crossOrigin = priorCrossOrigin)
-            : image.removeAttribute('crossorigin');
           image.src = imageSrc; // Force reload with new crossOrigin
         }
       }
