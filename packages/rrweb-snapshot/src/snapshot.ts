@@ -749,7 +749,7 @@ function serializeElementNode(
                   xhr.send();
                 });
               };
-              attributes.rr_dataURL = await convertImageToDataURL(image);
+              attributes.rr_dataURL = convertImageToDataURL(image);
             }
           } catch (err) {
             console.warn(`Failed to generate rr_dataURL for ${imageSrc}:`, err);
