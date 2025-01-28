@@ -752,9 +752,10 @@ function serializeElementNode(
                         reject(new Error('Failed to read image as data URL'));
                       reader.readAsDataURL(blob);
                     })
-                    .catch((err) =>
-                      reject(new Error('Network error while fetching image')),
-                    );
+                    .catch((err) => {
+                        console.warn('Network error while fetching image:', err); 
+                        reject(new Error('Network error while fetching image')); 
+                    });
                 });
               };
               convertImageToDataURL(image)
