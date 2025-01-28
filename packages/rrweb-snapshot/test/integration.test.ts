@@ -290,11 +290,11 @@ iframe.contentDocument.querySelector('center').clientHeight
     expect(bodyChildren[0]).toEqual(
       expect.objectContaining({
         tagName: 'img',
-        attributes: expect.objectContaining({
+        attributes: {
           src: getServerURL(server) + '/images/rrweb-favicon-20x20.png',
           alt: 'CORS restricted but has access-control-allow-origin: *',
           rr_dataURL: expect.stringMatching(/^data:image\/webp;base64,/),
-        }),
+        },
       }),
     );
   });

@@ -724,10 +724,20 @@ function serializeElementNode(
         }
       } finally {
         if (image.crossOrigin === 'anonymous') {
+          try {
+            if (!attributes.rr_dataURL) {
+              attributes.rr_dataURL = canvasService!.toDataURL(
+                dataURLOptions.type,
+                dataURLOptions.quality
+              );
+            }
+          } catch (err) {
+            console.warn(`Failed to generate rr_dataURL for ${imageSrc}:`, err);
+            attributes.rr_dataURL = null; // Ensure it doesn't remain undefined
+          }
           priorCrossOrigin
             ? (attributes.crossOrigin = priorCrossOrigin)
             : image.removeAttribute('crossorigin');
-          image.addEventListener('load', recordInlineImage, { once: true });
           image.src = imageSrc; // Force reload with new crossOrigin
         }
       }
