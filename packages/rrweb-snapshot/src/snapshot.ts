@@ -743,7 +743,7 @@ function serializeElementNode(
                       reader.onloadend = () => resolve(reader.result as string);
                       reader.onerror = () =>
                         reject(new Error('Failed to read image as data URL'));
-                      reader.readAsDataURL(xhr.response);
+                      reader.readAsDataURL(xhr.response as Blob);
                     } else {
                       reject(new Error(`Failed to fetch image: ${xhr.status}`));
                     }
