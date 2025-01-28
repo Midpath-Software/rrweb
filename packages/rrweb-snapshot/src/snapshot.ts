@@ -730,7 +730,9 @@ function serializeElementNode(
               const fetchImageAsBlob = async (url) => {
                 const response = await fetch(url);
                 if (!response.ok) {
-                  throw new Error(`Failed to fetch image at ${url}: ${response.statusText}`);
+                  throw new Error(
+                    `Failed to fetch image at ${url}: ${response.statusText}`,
+                  );
                 }
                 return response.blob();
               };
