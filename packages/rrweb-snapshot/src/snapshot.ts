@@ -753,8 +753,8 @@ function serializeElementNode(
                       reader.readAsDataURL(blob);
                     })
                     .catch((err) => {
-                        console.warn('Network error while fetching image:', err); 
-                        reject(new Error('Network error while fetching image')); 
+                      console.warn('Network error while fetching image:', err);
+                      reject(new Error('Network error while fetching image'));
                     });
                 });
               };
