@@ -714,6 +714,8 @@ function serializeElementNode(
             `Retrying with crossOrigin='anonymous' for img src=${imageSrc}`,
           );
           image.crossOrigin = 'anonymous';
+          if (image.complete && image.naturalWidth !== 0)
+            recordInlineImage();
           image.addEventListener('load', recordInlineImage, { once: true });
           image.src = imageSrc; // Force reload with new crossOrigin
         } else {
