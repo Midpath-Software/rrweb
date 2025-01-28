@@ -689,7 +689,7 @@ function serializeElementNode(
       }
     }
   }
-  // save image offline
+  // Save image offline
   if (tagName === 'img' && inlineImages) {
     if (!canvasService) {
       canvasService = doc.createElement('canvas');
@@ -709,37 +709,28 @@ function serializeElementNode(
           dataURLOptions.quality,
         );
       } catch (err) {
-        console.warn(
-          `Cannot inline img src=${imageSrc}! Error: ${err as string}`,
-        );
+        if (image.crossOrigin !== 'anonymous') {
+          console.warn(`Retrying with crossOrigin='anonymous' for img src=${imageSrc}`);
+          image.crossOrigin = 'anonymous';
+          image.addEventListener('load', recordInlineImage, { once: true });
+          image.src = imageSrc; // Force reload with new crossOrigin
+        } else {
+          console.warn(`Cannot inline img src=${imageSrc}! Error: ${err as string}`);
+        }
       } finally {
-        // Restore crossOrigin if it was changed
         if (image.crossOrigin === 'anonymous') {
           priorCrossOrigin
             ? (attributes.crossOrigin = priorCrossOrigin)
             : image.removeAttribute('crossorigin');
+          image.src = imageSrc; // Force reload with new crossOrigin
         }
       }
     };
-    const handleImageLoad = () => {
-      if (image.complete && image.naturalWidth !== 0) {
-        recordInlineImage();
-      } else {
-        image.addEventListener('load', recordInlineImage, { once: true });
-      }
-    };
-    const testImage = new Image();
-    testImage.src = imageSrc;
-    testImage.onload = handleImageLoad;
-    testImage.onerror = () => {
-      image.crossOrigin = 'anonymous';
-      handleImageLoad();
-    };
     // Handle already loaded images
     if (image.complete && image.naturalWidth !== 0) {
-      handleImageLoad();
+      recordInlineImage();
     } else {
-      image.addEventListener('load', handleImageLoad, { once: true });
+      image.addEventListener('load', recordInlineImage, { once: true });
     }
   }
   // media elements
