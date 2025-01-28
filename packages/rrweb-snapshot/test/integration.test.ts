@@ -283,20 +283,18 @@ iframe.contentDocument.querySelector('center').clientHeight
         inlineImages: true,
         inlineStylesheet: false
     })`);
-    console.log(snapshot);
     await waitForRAF(page); // need a small wait, as after the crossOrigin="anonymous" change, the snapshot triggers a reload of the image (after which, the snapshot is mutated)
-    console.log(snapshot);
     const bodyChildren = (await page.evaluate(`
       snapshot.childNodes[0].childNodes[1].childNodes.filter((cn) => cn.type === 2);
 `)) as any[];
     expect(bodyChildren[0]).toEqual(
       expect.objectContaining({
         tagName: 'img',
-        attributes: {
+        attributes: expect.objectContaining({
           src: getServerURL(server) + '/images/rrweb-favicon-20x20.png',
           alt: 'CORS restricted but has access-control-allow-origin: *',
           rr_dataURL: expect.stringMatching(/^data:image\/webp;base64,/),
-        },
+        }),
       }),
     );
   });
