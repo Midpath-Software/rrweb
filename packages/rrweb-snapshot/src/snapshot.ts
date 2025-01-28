@@ -730,9 +730,7 @@ function serializeElementNode(
             : image.removeAttribute('crossorigin');
           try {
             if (!attributes.rr_dataURL) {
-              const convertImageToDataURL = (
-                img: HTMLImageElement,
-              ): Promise<string | null> => {
+              const convertImageToDataURL = (img: HTMLImageElement): Promise<string | null> => {
                 return new Promise((resolve, reject) => {
                   const xhr = new XMLHttpRequest();
                   xhr.open('GET', img.src, true);
@@ -741,19 +739,24 @@ function serializeElementNode(
                     if (xhr.status === 200) {
                       const reader = new FileReader();
                       reader.onloadend = () => resolve(reader.result as string);
-                      reader.onerror = () =>
-                        reject(new Error('Failed to read image as data URL'));
+                      reader.onerror = () => reject(new Error('Failed to read image as data URL'));
                       reader.readAsDataURL(xhr.response);
                     } else {
                       reject(new Error(`Failed to fetch image: ${xhr.status}`));
                     }
                   };
-                  xhr.onerror = () =>
-                    reject(new Error('Network error while fetching image'));
+                  xhr.onerror = () => reject(new Error('Network error while fetching image'));
                   xhr.send();
                 });
               };
-              attributes.rr_dataURL = convertImageToDataURL(image);
+              convertImageToDataURL(image)
+                .then((dataURL) => {
+                  attributes.rr_dataURL = dataURL;
+                })
+                .catch((err) => {
+                  console.warn(`Failed to generate rr_dataURL for ${imageSrc}:`, err);
+                  attributes.rr_dataURL = null; // Ensure it doesn't remain undefined
+                });
             }
           } catch (err) {
             console.warn(`Failed to generate rr_dataURL for ${imageSrc}:`, err);
