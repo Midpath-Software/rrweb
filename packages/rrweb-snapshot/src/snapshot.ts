@@ -730,7 +730,7 @@ function serializeElementNode(
             if (!attributes.rr_dataURL) {
               attributes.rr_dataURL = canvasService!.toDataURL(
                 dataURLOptions.type,
-                dataURLOptions.quality
+                dataURLOptions.quality,
               );
             }
           } catch (err) {
