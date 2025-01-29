@@ -722,13 +722,15 @@ function serializeElementNode(
             ): Promise<string | null> => {
               try {
                 const response = await fetch(img.src);
-                if (!response.ok) throw new Error(`Failed to fetch image: ${response.status}`);
-                
+                if (!response.ok)
+                  throw new Error(`Failed to fetch image: ${response.status}`);
+
                 const blob = await response.blob();
                 return await new Promise((resolve, reject) => {
                   const reader = new FileReader();
                   reader.onloadend = () => resolve(reader.result as string);
-                  reader.onerror = () => reject(new Error('Failed to read image as data URL'));
+                  reader.onerror = () =>
+                    reject(new Error('Failed to read image as data URL'));
                   reader.readAsDataURL(blob);
                 });
               } catch (err) {
