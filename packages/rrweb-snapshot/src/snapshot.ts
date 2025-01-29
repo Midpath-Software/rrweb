@@ -754,7 +754,7 @@ function serializeElementNode(
                   `Failed to generate rr_dataURL for ${imageSrc}:`,
                   err,
                 );
-                attributes.rr_dataURL = null; // Ensure it doesn't remain undefined
+                // attributes.rr_dataURL = null; // Ensure it doesn't remain undefined
               });
           }
         }
