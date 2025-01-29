@@ -744,9 +744,7 @@ function serializeElementNode(
           fetch(img.src)
             .then((response) => {
               if (!response.ok) {
-                reject(
-                  new Error(`Failed to fetch image: ${response.status}`),
-                );
+                reject(new Error(`Failed to fetch image: ${response.status}`));
               }
               return response.blob();
             })
@@ -768,10 +766,7 @@ function serializeElementNode(
           attributes.rr_dataURL = dataURL;
         })
         .catch((err) => {
-          console.warn(
-            `Failed to generate rr_dataURL for ${imageSrc}:`,
-            err,
-          );
+          console.warn(`Failed to generate rr_dataURL for ${imageSrc}:`, err);
           attributes.rr_dataURL = null; // Ensure it doesn't remain undefined
         });
     }
