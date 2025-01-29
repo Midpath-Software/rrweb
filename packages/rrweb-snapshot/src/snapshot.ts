@@ -699,7 +699,7 @@ function serializeElementNode(
     const imageSrc: string =
       image.currentSrc || image.getAttribute('src') || '<unknown-src>';
     const priorCrossOrigin = image.crossOrigin;
-    const recordInlineImage = async () => {
+    const recordInlineImage = () => {
       try {
         canvasService!.width = image.naturalWidth;
         canvasService!.height = image.naturalHeight;
@@ -709,61 +709,80 @@ function serializeElementNode(
           dataURLOptions.quality,
         );
       } catch (err) {
-        console.warn(`Cannot inline img src=${imageSrc}! Error: ${err}`);
-        attributes.rr_dataURL = null;
+        if (image.crossOrigin !== 'anonymous') {
+          console.warn(
+            `Retrying with crossOrigin='anonymous' for img src=${imageSrc}`,
+          );
+          image.crossOrigin = 'anonymous';
+          if (image.complete && image.naturalWidth !== 0) recordInlineImage();
+          image.addEventListener('load', recordInlineImage, { once: true });
+          image.src = imageSrc; // Force reload with new crossOrigin
+        } else {
+          attributes.rr_dataURL = null;
+          console.warn(
+            `Cannot inline img src=${imageSrc}! Error: ${err as string}`,
+          );
+        }
       } finally {
         if (image.crossOrigin === 'anonymous') {
           priorCrossOrigin
             ? (attributes.crossOrigin = priorCrossOrigin)
             : image.removeAttribute('crossorigin');
-          if (!attributes.rr_dataURL) {
-            const convertImageToDataURL = async (
-              img: HTMLImageElement,
-            ): Promise<string | null> => {
-              try {
-                const response = await fetch(img.src);
-                if (!response.ok)
-                  throw new Error(`Failed to fetch image: ${response.status}`);
-
-                const blob = await response.blob();
-                return await new Promise((resolve, reject) => {
-                  const reader = new FileReader();
-                  reader.onloadend = () => resolve(reader.result as string);
-                  reader.onerror = () =>
-                    reject(new Error('Failed to read image as data URL'));
-                  reader.readAsDataURL(blob);
+          try {
+            if (!attributes.rr_dataURL) {
+              const convertImageToDataURL = (
+                img: HTMLImageElement,
+              ): Promise<string | null> => {
+                return new Promise((resolve, reject) => {
+                  fetch(img.src)
+                    .then((response) => {
+                      if (!response.ok) {
+                        reject(
+                          new Error(
+                            `Failed to fetch image: ${response.status}`,
+                          ),
+                        );
+                      }
+                      return response.blob();
+                    })
+                    .then((blob) => {
+                      const reader = new FileReader();
+                      reader.onloadend = () => resolve(reader.result as string);
+                      reader.onerror = () =>
+                        reject(new Error('Failed to read image as data URL'));
+                      reader.readAsDataURL(blob);
+                    })
+                    .catch((err) => {
+                        console.warn('Network error while fetching image:', err); 
+                        reject(new Error('Network error while fetching image')); 
+                    });
                 });
-              } catch (err) {
-                console.warn('Network error while fetching image:', err);
-                return null;
-              }
-            };
-            // Ensure rr_dataURL is properly assigned
-            attributes.rr_dataURL = await convertImageToDataURL(image);
+              };
+              convertImageToDataURL(image)
+                .then((dataURL) => {
+                  attributes.rr_dataURL = dataURL;
+                })
+                .catch((err) => {
+                  console.warn(
+                    `Failed to generate rr_dataURL for ${imageSrc}:`,
+                    err,
+                  );
+                  attributes.rr_dataURL = null; // Ensure it doesn't remain undefined
+                });
+            }
+          } catch (err) {
+            console.warn(`Failed to generate rr_dataURL for ${imageSrc}:`, err);
+            attributes.rr_dataURL = null; // Ensure it doesn't remain undefined
           }
+          // image.src = imageSrc; // Force reload with new crossOrigin
         }
       }
     };
-    const handleImageLoad = () => {
-      if (image.complete && image.naturalWidth !== 0) {
-        recordInlineImage();
-      } else {
-        image.addEventListener('load', recordInlineImage, { once: true });
-      }
-    };
-    const testImage = new Image();
-    testImage.src = imageSrc;
-    testImage.onload = handleImageLoad;
-    testImage.onerror = () => {
-      image.crossOrigin = 'anonymous';
-      image.src = imageSrc; // Force reload with new crossOrigin
-      handleImageLoad();
-    };
     // Handle already loaded images
     if (image.complete && image.naturalWidth !== 0) {
-      handleImageLoad();
+      recordInlineImage();
     } else {
-      image.addEventListener('load', handleImageLoad, { once: true });
+      image.addEventListener('load', recordInlineImage, { once: true });
     }
   }
   // media elements
