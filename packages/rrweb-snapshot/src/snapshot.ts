@@ -712,13 +712,17 @@ function serializeElementNode(
         );
       } catch (err) {
         if (!retryingWithAnonymous && image.crossOrigin !== 'anonymous') {
-          console.warn(`Retrying with crossOrigin='anonymous' for img src=${imageSrc}`);
+          console.warn(
+            `Retrying with crossOrigin='anonymous' for img src=${imageSrc}`,
+          );
           retryingWithAnonymous = true; // Prevent infinite loop
           image.crossOrigin = 'anonymous';
           image.addEventListener('load', recordInlineImage, { once: true });
           image.src = imageSrc; // Reload image
         } else {
-          console.warn(`Cannot inline img src=${imageSrc}! Error: ${err as string}`);
+          console.warn(
+            `Cannot inline img src=${imageSrc}! Error: ${err as string}`,
+          );
         }
       }
       if (image.crossOrigin === 'anonymous') {
@@ -727,28 +731,39 @@ function serializeElementNode(
           : image.removeAttribute('crossorigin');
         try {
           if (!attributes.rr_dataURL) {
-            const convertImageToDataURL = (img: HTMLImageElement): Promise<string | null> => {
+            const convertImageToDataURL = (
+              img: HTMLImageElement,
+            ): Promise<string | null> => {
               return new Promise((resolve, reject) => {
                 const fetchImage = (mode: RequestMode) => {
                   fetch(img.src, { mode })
                     .then((response) => {
                       if (!response.ok && mode !== 'no-cors') {
-                        throw new Error(`Failed to fetch image: ${response.status}`);
+                        throw new Error(
+                          `Failed to fetch image: ${response.status}`,
+                        );
                       }
                       return response.blob();
                     })
                     .then((blob) => {
                       const reader = new FileReader();
                       reader.onloadend = () => resolve(reader.result as string);
-                      reader.onerror = () => reject(new Error('Failed to read image as Data URL'));
+                      reader.onerror = () =>
+                        reject(new Error('Failed to read image as Data URL'));
                       reader.readAsDataURL(blob);
                     })
                     .catch((err) => {
                       if (mode === 'no-cors') {
-                        console.warn('Both normal fetch and no-cors fetch failed:', err);
+                        console.warn(
+                          'Both normal fetch and no-cors fetch failed:',
+                          err,
+                        );
                         reject(new Error('Network error while fetching image'));
                       } else {
-                        console.warn('Fetch failed, retrying with no-cors:', err);
+                        console.warn(
+                          'Fetch failed, retrying with no-cors:',
+                          err,
+                        );
                         fetchImage('no-cors'); // Retry with 'no-cors'
                       }
                     });
@@ -761,7 +776,10 @@ function serializeElementNode(
                 attributes.rr_dataURL = dataURL;
               })
               .catch((err) => {
-                console.warn(`Failed to generate rr_dataURL for ${image.src}:`, err);
+                console.warn(
+                  `Failed to generate rr_dataURL for ${image.src}:`,
+                  err,
+                );
                 attributes.rr_dataURL = null; // Ensure it doesn't remain undefined
               });
           }
