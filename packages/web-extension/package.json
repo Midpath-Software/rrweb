@@ -53,6 +53,6 @@
     "react-icons": "^4.4.0",
     "react-router-dom": "^6.4.1",
     "rrweb": "file:../rrweb",
-    "rrweb-player": "file:../rrweb-player",
+    "rrweb-player": "file:../rrweb-player"
   }
 }
