@@ -64,6 +64,6 @@
     "cssstyle": "^2.3.0",
     "nwsapi": "2.2.0",
     "rrdom": "^2.0.1-alpha.19",
-    "@rrweb/types": "^2.0.1-alpha.19"
+    "@rrweb/types": "file:../types"
   }
 }

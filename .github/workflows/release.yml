@@ -30,6 +30,7 @@ jobs:
         run: |
           npm config set registry https://npm.pkg.github.com
           echo "//npm.pkg.github.com/:_authToken=$GITHUB_TOKEN" > "$HOME/.npmrc"
+          echo '@rrweb:registry=https://npm.pkg.github.com/' >> "$HOME/.npmrc"
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets

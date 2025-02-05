@@ -79,7 +79,7 @@
   },
   "dependencies": {
     "fflate": "^0.4.4",
-    "@rrweb/types": "^2.0.1-alpha.19"
+    "@rrweb/types": "file:../types"
   },
   "browserslist": [
     "supports es6-class"
