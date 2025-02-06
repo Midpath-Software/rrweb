@@ -31,15 +31,14 @@ jobs:
           yarn changeset version
           echo "VERSION=$(node -p 'require(\"./package.json\").version')" >> "$GITHUB_ENV"
 
-      - name: Setup Corepack
-        run: corepack enable
-
       - name: Build Packages as Tarballs
         id: build
         run: |
           mkdir -p built-packages
-          yarn workspaces foreach --no-private --verbose \
-            exec yarn pack --filename "../built-packages/\${npm_package_name}-\${npm_package_version}.tgz"
+          for pkg in $(jq -r '.workspaces[]' package.json); do
+            echo "Packing $pkg"
+            (cd "$pkg" && yarn pack --filename "../../built-packages/\${npm_package_name}-\${npm_package_version}.tgz")
+          done
 
       - name: Upload Built Packages as Artifacts
         uses: actions/upload-artifact@v4
