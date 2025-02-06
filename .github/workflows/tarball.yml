@@ -25,6 +25,9 @@ jobs:
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
 
+      - name: Build Project
+        run: NODE_OPTIONS='--max-old-space-size=4096' yarn build:all
+
       - name: Version Packages Using Changesets
         id: version
         run: |
@@ -35,9 +38,17 @@ jobs:
         id: build
         run: |
           mkdir -p built-packages
-          for pkg in $(jq -r '.workspaces[]' package.json); do
-            echo "Packing $pkg"
-            (cd "$pkg" && yarn pack --filename "../../built-packages/\${npm_package_name}-\${npm_package_version}.tgz")
+          for pkg_json in $(find packages -mindepth 2 -name package.json); do
+            pkg_dir=$(dirname "$pkg_json")
+            pkg_name=$(jq -r .name "$pkg_json")
+            pkg_version=$(jq -r .version "$pkg_json")
+            
+            if [[ -n "$pkg_name" && -n "$pkg_version" ]]; then
+              echo "Packing $pkg_name ($pkg_dir)"
+              (cd "$pkg_dir" && yarn pack --filename "../../built-packages/${pkg_name}-${pkg_version}.tgz")
+            else
+              echo "Skipping $pkg_dir (invalid package.json)"
+            fi
           done
 
       - name: Upload Built Packages as Artifacts
