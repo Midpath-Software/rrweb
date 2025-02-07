@@ -28,11 +28,15 @@ jobs:
       - name: Build Project
         run: NODE_OPTIONS='--max-old-space-size=4096' yarn build:all
 
+      - run: ls
+
       - name: Version Packages Using Changesets
         id: version
         run: |
           # yarn changeset version
           echo "VERSION=$(node -p 'require(\"./package.json\").version')" >> "$GITHUB_ENV"
+
+      - run: ls
 
       - name: Build Packages as Tarballs
         id: build
