@@ -41,8 +41,8 @@ jobs:
       - name: Build Packages as Tarballs
         id: build
         run: |
-          cd packages
-          mkdir -p built-packages
+          mkdir -p built-packages/@rrweb
+          mkdir -p packages/built-packages/@rrweb
           for pkg_json in $(find packages -mindepth 2 -name package.json); do
             pkg_dir=$(dirname "$pkg_json")
             pkg_name=$(jq -r .name "$pkg_json")
@@ -55,9 +55,10 @@ jobs:
               echo "Skipping $pkg_dir (invalid package.json)"
             fi
           done
+          rsync -a --remove-source-files packages/built-packages/ built-packages/ && rm -r packages/built-packages
 
       - name: Upload Built Packages as Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: built-packages
-          path: packages/built-packages/
+          path: built-packages/
