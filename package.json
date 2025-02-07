@@ -1,5 +1,6 @@
 {
   "name": "@rrweb/_monorepo",
+  "version": "2.0.1-alpha.20",
   "description": "record and replay the web",
   "publishConfig": {
     "access": "public",
