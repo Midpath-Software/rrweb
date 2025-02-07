@@ -12,6 +12,8 @@ jobs:
   build:
     name: Build & Pack
     runs-on: ubuntu-latest
+    outputs:
+      tarnames: ${{ steps.list_tarnames.outputs.tarnames }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -75,7 +77,7 @@ jobs:
         tarname: ${{ fromJson(needs.build.outputs.tarnames) }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Repo
         uses: actions/checkout@v4
 
       - name: Setup Git
@@ -84,7 +86,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Branch Name
+      - name: Set Branch Name
         run: |
           tarname="${{ matrix.tarname }}"
           targetBranch=$(echo "$tarname" | sed 's/_/\//g')
