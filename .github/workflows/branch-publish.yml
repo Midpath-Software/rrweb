@@ -116,7 +116,7 @@ jobs:
         run: |
           folder="tmp/${{ matrix.tarname }}"
           mkdir -p "$folder"
-          tar -xvzf "built-packages/${{ matrix.tarname }}.tgz" -C "$folder"
+          tar -xvzf "${{ matrix.tarname }}.tgz" -C "$folder"
           cd "$folder/package"
           
           git init
