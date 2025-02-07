@@ -43,7 +43,7 @@ jobs:
         run: |
           mkdir -p built-packages/@rrweb
           mkdir -p packages/built-packages/@rrweb
-          for pkg_json in $(find packages -mindepth 2 -name package.json); do
+          for pkg_json in $(find packages -mindepth 2 -name package.json ! -path "*/node_modules/*"); do
             pkg_dir=$(dirname "$pkg_json")
             pkg_name=$(jq -r .name "$pkg_json")
             pkg_version=$(jq -r .version "$pkg_json")
