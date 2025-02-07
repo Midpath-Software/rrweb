@@ -1,4 +1,4 @@
-name: Upload tarball
+name: Publish to branch
 
 on:
   workflow_dispatch:
@@ -9,8 +9,8 @@ on:
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  release:
-    name: Tarball
+  publish:
+    name: Publish
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -28,7 +28,7 @@ jobs:
       - name: Build Project
         run: NODE_OPTIONS='--max-old-space-size=4096' yarn build:all
 
-      - name: Version Packages Using Changesets
+      - name: Package Version
         id: version
         run: |
           # yarn changeset version
@@ -37,16 +37,17 @@ jobs:
       - name: Build Packages as Tarballs
         id: build
         run: |
-          mkdir -p built-packages/@rrweb
-          mkdir -p packages/built-packages/@rrweb
+          mkdir -p built-packages
+          mkdir -p packages/built-packages
           for pkg_json in $(find packages -mindepth 2 -name package.json ! -path "*/node_modules/*"); do
             pkg_dir=$(dirname "$pkg_json")
             pkg_name=$(jq -r .name "$pkg_json") || continue
             pkg_version=$(jq -r .version "$pkg_json") || continue
             
             if [[ -n "$pkg_name" && -n "$pkg_version" ]]; then
+              safe_pkg_name=$(echo "$pkg_name" | sed 's/\//_/g')
               echo "Packing $pkg_name ($pkg_dir)"
-              (cd "$pkg_dir" && yarn pack --filename "../../built-packages/${pkg_name}-${pkg_version}.tgz") || continue
+              (cd "$pkg_dir" && yarn pack --filename "../../built-packages/${safe_pkg_name}.tgz") || continue
             else
               echo "Skipping $pkg_dir (invalid package.json)"
             fi
