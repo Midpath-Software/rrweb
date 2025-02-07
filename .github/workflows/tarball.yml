@@ -37,6 +37,7 @@ jobs:
       - name: Build Packages as Tarballs
         id: build
         run: |
+          cd packages
           mkdir -p built-packages
           for pkg_json in $(find packages -mindepth 2 -name package.json); do
             pkg_dir=$(dirname "$pkg_json")
@@ -55,4 +56,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: built-packages
-          path: built-packages/
+          path: packages/built-packages/
