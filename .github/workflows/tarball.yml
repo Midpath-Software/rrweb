@@ -1,0 +1,58 @@
+name: Upload tarball
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    name: Tarball
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js lts/*
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build Project
+        run: NODE_OPTIONS='--max-old-space-size=4096' yarn build:all
+
+      - name: Version Packages Using Changesets
+        id: version
+        run: |
+          yarn changeset version
+          echo "VERSION=$(node -p 'require(\"./package.json\").version')" >> "$GITHUB_ENV"
+
+      - name: Build Packages as Tarballs
+        id: build
+        run: |
+          mkdir -p built-packages
+          for pkg_json in $(find packages -mindepth 2 -name package.json); do
+            pkg_dir=$(dirname "$pkg_json")
+            pkg_name=$(jq -r .name "$pkg_json")
+            pkg_version=$(jq -r .version "$pkg_json")
+            
+            if [[ -n "$pkg_name" && -n "$pkg_version" ]]; then
+              echo "Packing $pkg_name ($pkg_dir)"
+              (cd "$pkg_dir" && yarn pack --filename "../../built-packages/${pkg_name}-${pkg_version}.tgz")
+            else
+              echo "Skipping $pkg_dir (invalid package.json)"
+            fi
+          done
+
+      - name: Upload Built Packages as Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-packages
+          path: built-packages/

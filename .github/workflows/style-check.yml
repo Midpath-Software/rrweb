@@ -13,7 +13,7 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.head_ref }}
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: lts/*
           cache: 'yarn'
@@ -35,7 +35,7 @@ jobs:
 
   annotation:
     # Skip the annotation action in push events
-    if: github.event_name == 'pull_request_target'
+    if: github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != 'Midpath-Software/rrweb'
     needs: eslint_check_upload
     runs-on: ubuntu-latest
     name: ESLint Annotation
@@ -48,19 +48,20 @@ jobs:
         with:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
           report-json: 'eslint_report.json'
+          markdown-report-on-step-summary: true
 
   prettier_check:
     # In the forked PR, it's hard to format code and push to the branch directly, so the action only check the format correctness.
-    if: github.event_name != 'push' && github.event.pull_request.head.repo.full_name != 'rrweb-io/rrweb'
+    if: github.event_name != 'push' && github.event.pull_request.head.repo.full_name != 'Midpath-Software/rrweb'
     runs-on: ubuntu-latest
     name: Format Check
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.head_ref }}
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: lts/*
           cache: 'yarn'
@@ -71,16 +72,16 @@ jobs:
 
   prettier:
     # Skip the format code action in forked PRs
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == 'rrweb-io/rrweb'
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == 'Midpath-Software/rrweb'
     runs-on: ubuntu-latest
     name: Format Code
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.head_ref }}
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: lts/*
           cache: 'yarn'
