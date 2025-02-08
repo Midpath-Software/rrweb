@@ -97,6 +97,7 @@ jobs:
         run: |
           if git ls-remote --exit-code --heads origin "${{ env.targetBranch }}"; then
             echo "Branch ${{ env.targetBranch }} already exists."
+            git fetch origin "${{ env.targetBranch }}"
             git checkout "${{ env.targetBranch }}"
             git rm -rf .
           else
