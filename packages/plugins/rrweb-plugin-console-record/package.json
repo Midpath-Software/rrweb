@@ -58,6 +58,6 @@
   },
   "peerDependencies": {
     "rrweb": "github:Midpath-Software/rrweb#rrweb",
-    "@rrweb/utils": "github:Midpath-Software/rrweb#%40rrweb/utils"
+    "@rrweb/utils": "github:Midpath-Software/rrweb#@rrweb/utils"
   }
 }

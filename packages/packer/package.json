@@ -79,7 +79,7 @@
   },
   "dependencies": {
     "fflate": "^0.4.4",
-    "@rrweb/types": "github:Midpath-Software/rrweb#%40rrweb/types"
+    "@rrweb/types": "github:Midpath-Software/rrweb#@rrweb/types"
   },
   "browserslist": [
     "supports es6-class"

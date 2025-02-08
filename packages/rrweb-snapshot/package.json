@@ -58,8 +58,8 @@
   },
   "homepage": "https://github.com/Midpath-Software/rrweb/tree/master/packages/rrweb-snapshot#readme",
   "devDependencies": {
-    "@rrweb/types": "github:Midpath-Software/rrweb#%40rrweb/types",
-    "@rrweb/utils": "github:Midpath-Software/rrweb#%40rrweb/utils",
+    "@rrweb/types": "github:Midpath-Software/rrweb#@rrweb/types",
+    "@rrweb/utils": "github:Midpath-Software/rrweb#@rrweb/utils",
     "@types/jsdom": "^20.0.0",
     "@types/node": "^18.15.11",
     "@types/puppeteer": "^5.4.4",

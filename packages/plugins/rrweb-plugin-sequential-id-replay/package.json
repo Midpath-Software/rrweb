@@ -47,7 +47,7 @@
   },
   "homepage": "https://github.com/Midpath-Software/rrweb#readme",
   "devDependencies": {
-    "@rrweb/rrweb-plugin-sequential-id-record": "github:Midpath-Software/rrweb#%40rrweb/rrweb-plugin-sequential-id-record",
+    "@rrweb/rrweb-plugin-sequential-id-record": "github:Midpath-Software/rrweb#@rrweb/rrweb-plugin-sequential-id-record",
     "rrweb": "github:Midpath-Software/rrweb#rrweb",
     "typescript": "^5.4.5",
     "vite": "^5.3.1",

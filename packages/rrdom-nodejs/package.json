@@ -64,6 +64,6 @@
     "cssstyle": "^2.3.0",
     "nwsapi": "2.2.0",
     "rrdom": "github:Midpath-Software/rrweb#rrdom",
-    "@rrweb/types": "github:Midpath-Software/rrweb#%40rrweb/types"
+    "@rrweb/types": "github:Midpath-Software/rrweb#@rrweb/types"
   }
 }

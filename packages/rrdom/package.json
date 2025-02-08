@@ -45,7 +45,7 @@
     "url": "https://github.com/Midpath-Software/rrweb/issues"
   },
   "devDependencies": {
-    "@rrweb/types": "github:Midpath-Software/rrweb#%40rrweb/types",
+    "@rrweb/types": "github:Midpath-Software/rrweb#@rrweb/types",
     "@types/puppeteer": "^5.4.4",
     "@typescript-eslint/eslint-plugin": "^5.23.0",
     "@typescript-eslint/parser": "^5.23.0",

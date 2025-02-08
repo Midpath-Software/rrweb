@@ -56,9 +56,9 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@rrweb/types": "github:Midpath-Software/rrweb#%40rrweb/types",
+    "@rrweb/types": "github:Midpath-Software/rrweb#@rrweb/types",
     "rrweb": "github:Midpath-Software/rrweb#rrweb",
-    "@rrweb/utils": "github:Midpath-Software/rrweb#%40rrweb/utils"
+    "@rrweb/utils": "github:Midpath-Software/rrweb#@rrweb/utils"
   },
   "browserslist": [
     "supports es6-class"
