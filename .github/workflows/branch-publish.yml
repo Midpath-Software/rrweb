@@ -93,18 +93,18 @@ jobs:
           echo "targetBranch=$targetBranch" >> $GITHUB_ENV
           echo "sourceBranch=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
 
-      - name: Create Orphan Branch
+      - name: Checkout or Create Orphan Branch
         run: |
-          git fetch origin ${{ env.targetBranch }} || true
-          if git rev-parse --verify "origin/${{ env.targetBranch }}" >/dev/null 2>&1; then
+          if git ls-remote --exit-code --heads origin "${{ env.targetBranch }}"; then
             echo "Branch ${{ env.targetBranch }} already exists."
+            git checkout "${{ env.targetBranch }}"
+            git rm -rf .
           else
             echo "Creating orphan branch ${{ env.targetBranch }}"
             git checkout --orphan "${{ env.targetBranch }}"
             git rm -rf .
             git commit --allow-empty -m "Initial commit"
             git push origin "${{ env.targetBranch }}"
-            git checkout --force "${{ env.sourceBranch }}"
           fi
 
       - name: Download Built Packages
@@ -112,18 +112,16 @@ jobs:
         with:
           name: built-packages
 
-      - name: Extract and Publish Package
+      - name: Extract Package Contents
         run: |
-          folder="tmp/${{ matrix.tarname }}"
-          mkdir -p "$folder"
-          tar -xvzf "${{ matrix.tarname }}.tgz" -C "$folder"
-          cd "$folder/package"
-          
-          git init
+          mkdir -p tmp
+          tar -xzf "${{ matrix.tarname }}.tgz" -C tmp
+          cp -r tmp/package/* .
+          rm -rf tmp *.tgz
+
+      - name: Commit and Push
+        run: |
           git add .
           git commit -m "Publish ${{ env.targetBranch }} package"
-          
-          git remote add origin "https://github.com/${{ github.repository }}.git"
-          git push --force origin HEAD:${{ env.targetBranch }}
-          
-          rm -rf "$folder"
+          git push --force origin "${{ env.targetBranch }}"
+          git checkout --force "${{ env.sourceBranch }}"
