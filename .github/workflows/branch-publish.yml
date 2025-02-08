@@ -99,7 +99,9 @@ jobs:
             echo "Branch ${{ env.targetBranch }} already exists."
             git fetch origin "${{ env.targetBranch }}"
             git checkout "${{ env.targetBranch }}"
-            git rm -rf .
+            if [ -n "$(git ls-files)" ]; then
+                git rm -rf .
+            fi
           else
             echo "Creating orphan branch ${{ env.targetBranch }}"
             git checkout --orphan "${{ env.targetBranch }}"
