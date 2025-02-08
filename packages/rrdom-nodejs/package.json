@@ -63,7 +63,7 @@
     "cssom": "^0.5.0",
     "cssstyle": "^2.3.0",
     "nwsapi": "2.2.0",
-    "rrdom": "^2.0.1-alpha.20",
-    "@rrweb/types": "^2.0.1-alpha.20"
+    "rrdom": "github:Midpath-Software/rrweb#rrdom",
+    "@rrweb/types": "github:Midpath-Software/rrweb#%40rrweb/types"
   }
 }

@@ -57,9 +57,9 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@rrweb/types": "^2.0.1-alpha.20",
-    "@rrweb/packer": "^2.0.1-alpha.20",
-    "rrweb": "^2.0.1-alpha.20"
+    "@rrweb/types": "github:Midpath-Software/rrweb#%40rrweb/types",
+    "@rrweb/packer": "github:Midpath-Software/rrweb#%40rrweb/packer",
+    "rrweb": "github:Midpath-Software/rrweb#rrweb"
   },
   "browserslist": [
     "supports es6-class"

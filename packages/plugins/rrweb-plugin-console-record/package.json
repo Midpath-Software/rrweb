@@ -49,7 +49,7 @@
   },
   "homepage": "https://github.com/Midpath-Software/rrweb#readme",
   "devDependencies": {
-    "rrweb": "^2.0.1-alpha.20",
+    "rrweb": "github:Midpath-Software/rrweb#rrweb",
     "typescript": "^5.4.5",
     "vite": "^5.3.1",
     "vite-plugin-dts": "^3.9.1",
@@ -57,7 +57,7 @@
     "puppeteer": "^20.9.0"
   },
   "peerDependencies": {
-    "rrweb": "^2.0.1-alpha.20",
-    "@rrweb/utils": "^2.0.1-alpha.20"
+    "rrweb": "github:Midpath-Software/rrweb#rrweb",
+    "@rrweb/utils": "github:Midpath-Software/rrweb#%40rrweb/utils"
   }
 }
